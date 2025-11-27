@@ -135,6 +135,10 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
                             <span class="stat-label">Status:</span>
                             <span class="stat-value" id="statusJogo">Jogando</span>
                         </div>
+                        <div class="stat">
+                            <span class="stat-label">Tempo:</span>
+                            <span class="stat-value" id="timer">00:00</span>
+                        </div>
                     </div>
 
                     <div class="tabuleiro-wrapper">
@@ -159,6 +163,19 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
                     <div class="controls">
                         <button id="novoJogo" class="btn btn-primary">Novo Jogo</button>
                     </div>
+
+                    <div class="ranking-section" id="rankingSection">
+                        <h3>Ranking (Melhores tempos)</h3>
+                        <div class="ranking-container">
+                            <table id="rankingTable">
+                                <thead>
+                                    <tr><th>#</th><th>Nome</th><th>Tempo</th><th>Data</th></tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -179,9 +196,22 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
 
         <div class="modal" id="modal">
             <div class="modal-content">
-                <h2 id="modalTitulo"></h2>
-                <p id="modalMensagem"></p>
-                <button id="fecharModal" class="btn btn-primary">Jogar Novamente</button>
+                    <button id="modalClose" class="modal-close" aria-label="Fechar">×</button>
+                    <h2 id="modalTitulo"></h2>
+                    <p id="modalMensagem"></p>
+                    <button id="fecharModal" class="btn btn-primary">Jogar Novamente</button>
+                </div>
+        </div>
+
+        <!-- Start modal: ask player name -->
+        <div class="modal" id="startModal" style="display:flex;">
+            <div class="modal-content">
+                <h2>Pronto para Jogar?</h2>
+                <p>Digite seu nome para entrar no ranking:</p>
+                <input type="text" id="playerName" placeholder="Seu nome" style="padding:8px;border-radius:6px;border:1px solid #334155;width:80%;margin-bottom:12px;">
+                <div style="display:flex;gap:8px;justify-content:center;">
+                    <button id="startButton" class="btn btn-primary">Começar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -358,6 +388,92 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
             ocultarModal();
             novoJogo();
         });
+        document.getElementById('modalClose').addEventListener('click', function() {
+            ocultarModal();
+        });
+        // Ranking & Timer variables
+        let jogadorNome = null;
+        let jogoIniciado = false;
+        let timerInterval = null;
+        let elapsedSeconds = 0;
+
+        function formatTime(sec) {
+            const mm = String(Math.floor(sec / 60)).padStart(2, '0');
+            const ss = String(sec % 60).padStart(2, '0');
+            return `${mm}:${ss}`;
+        }
+
+        function startTimer() {
+            elapsedSeconds = 0;
+            document.getElementById('timer').textContent = formatTime(elapsedSeconds);
+            timerInterval = setInterval(() => {
+                elapsedSeconds++;
+                document.getElementById('timer').textContent = formatTime(elapsedSeconds);
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function saveRanking(name, seconds) {
+            const key = 'game_grafos_ranking';
+            const raw = localStorage.getItem(key);
+            const list = raw ? JSON.parse(raw) : [];
+            const entry = { name: name, seconds: seconds, time: formatTime(seconds), date: new Date().toLocaleString() };
+            list.push(entry);
+            // sort by seconds asc
+            list.sort((a, b) => a.seconds - b.seconds);
+            // keep top 20
+            const top = list.slice(0, 20);
+            localStorage.setItem(key, JSON.stringify(top));
+            populateRankingTable();
+        }
+
+        function populateRankingTable() {
+            const key = 'game_grafos_ranking';
+            const raw = localStorage.getItem(key);
+            const list = raw ? JSON.parse(raw) : [];
+            const tbody = document.querySelector('#rankingTable tbody');
+            tbody.innerHTML = '';
+            list.forEach((e, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${idx + 1}</td><td>${e.name}</td><td>${e.time}</td><td>${e.date}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Start modal handlers
+        document.getElementById('startButton').addEventListener('click', function() {
+            const input = document.getElementById('playerName');
+            const val = input.value.trim() || 'Jogador';
+            jogadorNome = val;
+            document.getElementById('startModal').style.display = 'none';
+            jogoIniciado = true;
+            startTimer();
+        });
+
+        // prevent playing before starting
+        const originalRevealer = revelarCelula;
+        function revelarCelulaWrapper(l, c) {
+            if (!jogoIniciado) return;
+            originalRevealer(l, c);
+        }
+        // override the function used by event listeners
+        window.revelarCelula = revelarCelulaWrapper;
+
+        // when game ends, stop timer and save ranking
+        const originalMostrarFim = mostrarFim;
+        function mostrarFimWrapped(titulo, mensagem) {
+            stopTimer();
+            if (jogadorNome) saveRanking(jogadorNome, elapsedSeconds);
+            originalMostrarFim(titulo, mensagem);
+        }
+        window.mostrarFim = mostrarFimWrapped;
+
+        // populate ranking immediately on load
+        populateRankingTable();
 
         // Inicializar
         desenharGrafo();

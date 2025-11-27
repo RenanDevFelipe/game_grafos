@@ -519,6 +519,68 @@ tr:hover td {
     animation: popUp 0.4s ease-out;
 }
 
+.modal-content {
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    font-size: 1.6em;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+}
+
+.modal-close:hover {
+    color: white;
+}
+
+/* Start modal specifics (reuse modal styles) */
+#startModal .modal-content {
+    max-width: 420px;
+}
+
+.ranking-section {
+    margin-top: 12px;
+    background: rgba(0,0,0,0.06);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.03);
+}
+
+.ranking-section h3 {
+    margin: 0 0 8px 0;
+    color: var(--secondary-color);
+    font-size: 1em;
+}
+
+.ranking-container {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+#rankingTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+#rankingTable th, #rankingTable td {
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    text-align: left;
+}
+
+#rankingTable thead th {
+    color: #cbd5e1;
+    font-weight: 700;
+}
+
 .modal-content h2 {
     font-size: 2.5em;
     margin-bottom: 20px;
