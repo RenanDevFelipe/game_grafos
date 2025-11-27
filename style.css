@@ -540,6 +540,39 @@ tr:hover td {
     color: white;
 }
 
+/* Start modal tweaks */
+#startModal .modal-content {
+    max-width: 420px;
+    padding: 24px;
+}
+
+.ranking-section {
+    margin-top: 12px;
+}
+
+.ranking-container {
+    background: rgba(0,0,0,0.12);
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+#rankingTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#rankingTable th, #rankingTable td {
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.9em;
+}
+
+#rankingTable th {
+    color: var(--secondary-color);
+}
+
 /* Start modal specifics (reuse modal styles) */
 #startModal .modal-content {
     max-width: 420px;

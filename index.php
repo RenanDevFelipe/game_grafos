@@ -90,6 +90,7 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
                         <p class="grafo-info">Estude o grafo e tente encontrar as ligações!</p>
                     </div>
 
+
                     <div class="matrix-section" id="matrixSection" style="display: none;">
                         <h2>Matriz de Adjacência do Grafo</h2>
                         <p class="matrix-info">Aqui está a matriz que você precisava descobrir:</p>
@@ -467,7 +468,8 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
         const originalMostrarFim = mostrarFim;
         function mostrarFimWrapped(titulo, mensagem) {
             stopTimer();
-            if (jogadorNome) saveRanking(jogadorNome, elapsedSeconds);
+            // only save to ranking if player won
+            if (vitoria && jogadorNome) saveRanking(jogadorNome, elapsedSeconds);
             originalMostrarFim(titulo, mensagem);
         }
         window.mostrarFim = mostrarFimWrapped;
