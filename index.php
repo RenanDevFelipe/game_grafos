@@ -52,7 +52,7 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo do Grafo - Bandeirinhas e Bombas</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1">
 </head>
 
 <body>
@@ -79,12 +79,12 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
                                 <!-- Arestas do grafo -->
                                 <g id="arestas"></g>
 
-                                <!-- Labels dos nós -->
-                                <text x="150" y="58" class="node-label">V0</text>
-                                <text x="250" y="128" class="node-label">V1</text>
-                                <text x="220" y="228" class="node-label">V2</text>
-                                <text x="80" y="228" class="node-label">V3</text>
-                                <text x="50" y="128" class="node-label">V4</text>
+                                <!-- Labels dos nós (visuais) -->
+                                <text x="150" y="58" class="node-label">V1</text>
+                                <text x="250" y="128" class="node-label">V2</text>
+                                <text x="220" y="228" class="node-label">V3</text>
+                                <text x="80" y="228" class="node-label">V4</text>
+                                <text x="50" y="128" class="node-label">V5</text>
                             </svg>
                         </div>
                         <p class="grafo-info">Estude o grafo e tente encontrar as ligações!</p>
@@ -98,18 +98,18 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>V0</th>
                                         <th>V1</th>
                                         <th>V2</th>
                                         <th>V3</th>
                                         <th>V4</th>
+                                        <th>V5</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
                                     for ($i = 0; $i < 5; $i++) {
                                         echo "<tr>";
-                                        echo "<th>V$i</th>";
+                                        echo "<th>V" . ($i + 1) . "</th>";
                                         for ($j = 0; $j < 5; $j++) {
                                             $valor = $matrizAdjacencia[$i][$j];
                                             $classe = $valor == 0 ? 'bomba' : 'segura';
@@ -137,17 +137,23 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
                         </div>
                     </div>
 
-                    <div class="tabuleiro" id="tabuleiro">
-                        <?php
-                        for ($i = 0; $i < 5; $i++) {
-                            for ($j = 0; $j < 5; $j++) {
-                                echo "<div class='celula' id='celula-$i-$j' data-linha='$i' data-coluna='$j'>
-                                        <div class='celula-front'>?</div>
-                                        <div class='celula-back'></div>
-                                      </div>";
+                    <div class="tabuleiro-wrapper">
+                        <div class="tab-layout" id="tabuleiro">
+                            <div class="corner"></div>
+                            <?php for ($j = 0; $j < 5; $j++) { echo "<div class='col-label'>V" . ($j + 1) . "</div>"; } ?>
+
+                            <?php
+                            for ($i = 0; $i < 5; $i++) {
+                                echo "<div class='row-label'>V" . ($i + 1) . "</div>";
+                                for ($j = 0; $j < 5; $j++) {
+                                    echo "<div class='celula' id='celula-$i-$j' data-linha='$i' data-coluna='$j'>
+                                            <div class='celula-front'>?</div>
+                                            <div class='celula-back'></div>
+                                          </div>";
+                                }
                             }
-                        }
-                        ?>
+                            ?>
+                        </div>
                     </div>
 
                     <div class="controls">
@@ -160,14 +166,14 @@ $matrizComBombasJson = json_encode($matrizComBombas, JSON_NUMERIC_CHECK);
                 <h3>📋 Como Montar o Quadro</h3>
                 <p>Baseado no grafo fornecido:</p>
                 <ul>
-                    <li><strong>Linhas:</strong> Representam o vértice de origem (V0, V1, V2, V3, V4)</li>
-                    <li><strong>Colunas:</strong> Representam o vértice de destino (V0, V1, V2, V3, V4)</li>
+                    <li><strong>Linhas:</strong> Representam o vértice de origem (V1, V2, V3, V4, V5)</li>
+                    <li><strong>Colunas:</strong> Representam o vértice de destino (V1, V2, V3, V4, V5)</li>
                     <li><strong>Se há uma aresta</strong> entre dois vértices, coloque <strong>1</strong> na matriz</li>
                     <li><strong>Se NÃO há aresta</strong>, coloque <strong>0</strong> (BOMBA!) na matriz</li>
                     <li><strong>A diagonal é sempre 0</strong> (um vértice não se conecta a si mesmo)</li>
                     <li><strong>A matriz é simétrica</strong>: se V0→V1, então V1→V0</li>
                 </ul>
-                <p class="exemplo"><strong>Exemplo:</strong> Se há uma aresta entre V0 e V1, então matriz[0][1] = 1 E matriz[1][0] = 1</p>
+                <p class="exemplo"><strong>Exemplo:</strong> Se há uma aresta entre V1 e V2, na matriz isso aparece em <code>matriz[0][1]</code> e <code>matriz[1][0]</code>.</p>
             </div>
         </div>
 
